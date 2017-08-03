@@ -26,3 +26,18 @@ int numero_lineas(){
 	}
 	return -1;
 }
+int main(int argc, char *argv[]){
+	if(argc<3){
+		return -1;
+	}
+	char* ruta = argv[2];
+	char** palabras;
+	int tPalabras=argc-2;
+	palabras = (char**)malloc(*sizeof(char*));
+	int i;
+	for(i = 0;i<tPalabras;i++){
+		palabras[i]=argc[i+2];
+		printf("%s\n",palbras[i]);
+	}
+	return 0;
+}
