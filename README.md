@@ -1,4 +1,4 @@
 # Taller12
 
-Luis Arizaga
-Lucio Arias
+- Luis Arizaga 
+- Lucio Arias
