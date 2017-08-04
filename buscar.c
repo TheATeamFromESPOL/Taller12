@@ -1,13 +1,14 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
 
 #define MAX 1000000
-int numero_lineas();
+int numero_lineas(char *ruta, int *tam_lineas);
 
-int numero_lineas(){
+int numero_lineas(char *ruta, int *tam_lineas){
 	if(ruta!=NULL){
-		File* ar = fopen(ruta,"r");
+		FILE* ar = fopen(ruta,"r");
 		int lineas = 0;
 		int tam_linea;
 		while(!feof(ar)){
@@ -15,7 +16,7 @@ int numero_lineas(){
 			char c = getc(ar);
 			if(c=='\n'){
 				if(tam_lineas!=NULL){
-					tam_lineas[lineas] = tam_lineas;
+					tam_lineas[lineas] = tam_linea;
 				}
 				lineas++;
 				tam_lineas = 0;
@@ -27,17 +28,15 @@ int numero_lineas(){
 	return -1;
 }
 int main(int argc, char *argv[]){
-	if(argc<3){
+	if(argc<4){
 		return -1;
 	}
-	char* ruta = argv[2];
+	char* ruta = argv[1];
 	char** palabras;
-	int tPalabras=argc-2;
-	palabras = (char**)malloc(*sizeof(char*));
+	int tPalabras=argc-3;
+	palabras = (char**)malloc(tPalabras*sizeof(char*));
 	int i;
-	for(i = 0;i<tPalabras;i++){
-		palabras[i]=argc[i+2];
-		printf("%s\n",palbras[i]);
+	for(i = 0 ; i < tPalabras ; i++){
+		palabras[i]=argv[i+3];
 	}
-	return 0;
 }
