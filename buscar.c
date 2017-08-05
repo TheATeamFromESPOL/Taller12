@@ -4,7 +4,12 @@
 #include <pthread.h>
 
 #define MAX 1000000
+
+char *palabras[MAX];
+int num_palabras[MAX];
+
 int numero_lineas(char *ruta, int *tam_lineas);
+int palabraEnArreglo(char *palabra, char **palabras);
 
 int numero_lineas(char *ruta, int *tam_lineas){
 	if(ruta!=NULL){
@@ -27,6 +32,7 @@ int numero_lineas(char *ruta, int *tam_lineas){
 	}
 	return -1;
 }
+
 int main(int argc, char *argv[]){
 	if(argc<4){
 		return -1;
@@ -39,4 +45,6 @@ int main(int argc, char *argv[]){
 	for(i = 0 ; i < tPalabras ; i++){
 		palabras[i]=argv[i+3];
 	}
+	int nHilos;
+	nHilos = argv[2];
 }
