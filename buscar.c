@@ -5,11 +5,16 @@
 
 #define MAX 1000000
 
-char *palabras[MAX];
-int num_palabras[MAX];
-
 int numero_lineas(char *ruta, int *tam_lineas);
-int palabraEnArreglo(char *palabra, char **palabras);
+void * funcion_hilo(void *estruc);
+
+typedef struct mi_estructuraTDA
+{
+	int inicio;
+	int fin;
+	char *ruta;	
+} estructura;
+
 
 int numero_lineas(char *ruta, int *tam_lineas){
 	if(ruta!=NULL){
@@ -33,18 +38,39 @@ int numero_lineas(char *ruta, int *tam_lineas){
 	return -1;
 }
 
+void * funcion_hilo(void *estruc){
+	
+	estructura *datos= (estructura *)estruc;
+	
+	char *ruta = datos->ruta;
+	FILE *fp = fopen(ruta,"rt");
+
+	fseek(fp, offset, SEEK_SET);
+
+	int suma = 0;
+	char *linea;
+	while((linea = fgets(fp, buf, tamano))!=NULL){
+		
+	}
+	return (void *)suma;	
+}
+
 int main(int argc, char *argv[]){
 	if(argc<4){
 		return -1;
 	}
 	char* ruta = argv[1];
+	int nHilos = atoi(argv[2]); 
 	char** palabras;
 	int tPalabras=argc-3;
 	palabras = (char**)malloc(tPalabras*sizeof(char*));
+	int num_palabras[tPalabras];
 	int i;
 	for(i = 0 ; i < tPalabras ; i++){
 		palabras[i]=argv[i+3];
 	}
-	int nHilos;
-	nHilos = argv[2];
+	pthread_t * hilos;
+	hilos = (pthread_t*)malloc(nHilos*sizeof(pthread_t));
+	
+	return 0;
 }
