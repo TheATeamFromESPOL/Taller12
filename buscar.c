@@ -5,15 +5,18 @@
 
 #define MAX 1000000
 
+int palabraEnArreglo(char **arreglo,char *palabra);
 int numero_lineas(char *ruta, int *tam_lineas);
 void * funcion_hilo(void *estruc);
 
 typedef struct mi_estructuraTDA{
 	int linea_inicio;
 	int linea_final;
-	int nLineas;
+	int tPalabras;
 	int *tam_lineas;
+	int *num_palabras;
 	char *ruta;
+	char **palabras;
 }estructura;
 
 int numero_lineas(char *ruta, int *tam_lineas){
@@ -44,12 +47,14 @@ void * funcion_hilo(void *estruc){
 	
 	int linea_inicio = datos->linea_inicio;
 	int linea_final = datos->linea_final;
-	int nLineas = datos->nLineas;
-	int tam_lineas = datos->tam_lineas;
+	int tPalabras = datos->tPalabras;
+	int *tam_lineas = datos->tam_lineas;
+	int *num_palabras = datos->num_palabras;
 	char *ruta = datos->ruta;
+	char **palabras = datos->*palabras;
 
+	//Open de archivo
 	FILE *fp = fopen(ruta,"r");
-	fseek(fp,0, SEEK_SET);
 
 	int posInicial = 0;
 	int i;
@@ -62,11 +67,27 @@ void * funcion_hilo(void *estruc){
 		posFinal += tam_lineas[i];
 	}
 
+	//Colocación de puntero en la posición correspondiente
+	fseek(fp,posInicial, SEEK_SET);
+	
 	char *linea;
-	while((ftell(fp)<=posFinal)||(fgets(linea,MAX,fp)!=NULL)){
-		
+	char *palabra;
+	char *temp;
+	int j;
+	while((ftell(fp)<=posFinal)&&(fgets(linea,MAX,fp)!=NULL)){
+		palabra = strtok(linea,",.!?:;");
+		while(palabra!=NULL){
+			for(j=0;j<tPalabras;j++){
+				temp = palabras+j;
+				if(strcmp(temp,palabra)==0){
+					(num_palabras+j)+=1;
+				}
+				palabra = strtok(NULL,",.!?:;");
+			}
+		}
 	}
-	return (void *)suma;	
+
+	return (void *)suma;
 }
 
 int main(int argc, char *argv[]){
