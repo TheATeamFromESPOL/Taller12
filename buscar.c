@@ -128,9 +128,9 @@ int main(int argc, char *argv[]){
 	nLineas = numero_lineas(ruta,tam_lineas);//Sale violación de core
 	printf("realiza la funcion numero_lineas\n");
 	printf("numero de lineas del archivo:%i\n",nLineas);
-	for(i = 0 ; i < nLineas ; i++){
+	/*for(i = 0 ; i < nLineas ; i++){
 		printf("linea=%i, valor:%i\n",i+1,tam_lineas[i]);
-	}
+	}*/
 	int ini,fin,div;
 	div = (int)nLineas/nHilos;
 	int j;
