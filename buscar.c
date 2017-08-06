@@ -5,6 +5,10 @@
 
 #define MAX 1000000
 
+pthread_mutex_t lock;
+int num_palabras[MAX];
+char *palabras[MAX];
+
 int palabraEnArreglo(char **arreglo,char *palabra);
 int numero_lineas(char *ruta, int *tam_lineas);
 void *funcion_hilo(void *estruc);
@@ -15,21 +19,14 @@ typedef struct mi_estructuraTDA{
 	int linea_final;
 	int tPalabras;
 	int *tam_lineas;
-	int *num_palabras;
 	char *ruta;
-	char **palabras;
 }estructura;
-
-typedef struct palabrasVecesTDA{
-	char **palabras;
-	int *num_palabras;
-}
 
 int numero_lineas(char *ruta, int *tam_lineas){
 	if(ruta!=NULL){
 		FILE* ar = fopen(ruta,"r");
 		int lineas = 0;
-		int tam_linea;
+		int tam_linea = 0;
 		while(!feof(ar)){
 			tam_linea++;
 			char c = getc(ar);
@@ -49,15 +46,15 @@ int numero_lineas(char *ruta, int *tam_lineas){
 
 void * funcion_hilo(void *estruc){
 	
+	long retorno = 0;
+
 	estructura *datos= (estructura *)estruc;
 	
 	int linea_inicio = datos->linea_inicio;
 	int linea_final = datos->linea_final;
 	int tPalabras = datos->tPalabras;
 	int *tam_lineas = datos->tam_lineas;
-	int *num_palabras = datos->num_palabras;
 	char *ruta = datos->ruta;
-	char **palabras = datos->palabras;
 
 	//Open de archivo
 	FILE *fp = fopen(ruta,"r");
@@ -76,7 +73,7 @@ void * funcion_hilo(void *estruc){
 	//Colocación de puntero en la posición correspondiente
 	fseek(fp,posInicial, SEEK_SET);
 	
-	char *linea;
+	char *linea = "";
 	char *palabra;
 	char *temp;
 	int j;
@@ -84,20 +81,22 @@ void * funcion_hilo(void *estruc){
 		palabra = strtok(linea,",.!?:;");
 		while(palabra!=NULL){
 			for(j=0;j<tPalabras;j++){
-				temp = *(palabras+j);
+				temp = palabras[j];
 				if(strcmp(temp,palabra)==0){
-					*(num_palabras+j)+=1;
+					num_palabras[j]+=1;
 				}
 				palabra = strtok(NULL,",.!?:;");
 			}
 		}
 	}
 
-	return (void *)suma;
+	return (void *)retorno;
 }
 
 void *impresionNumPalabras(void *estruc){
-
+	long retorno = 0;
+	
+	return (void *)retorno;
 }
 
 int main(int argc, char *argv[]){
@@ -107,20 +106,25 @@ int main(int argc, char *argv[]){
 	char* ruta = argv[1];
 	int nHilos = atoi(argv[2]); 
 	int tPalabras=argc-3;
-	//Aquí habría que usa una estructura palabrasvecesTDA o sino solamente usar un arreglo global para las palabras y para el num de veces
-	char** palabras;
+	//Aquí habría que usa una estructura palabrasvecesTDA o sino solamente usar un arreglo global para las palabras y para el num de veces --Opté por los arreglos globales
+	/*char** palabras;
 	palabras = (char**)malloc(tPalabras*sizeof(char*));
-	int num_palabras[tPalabras];
+	int num_palabras[tPalabras];*/
+
 	int i;
 	for(i = 0 ; i < tPalabras ; i++){
 		palabras[i]=argv[i+3];
 	}
+	
 	pthread_t *hilos;
 	hilos = (pthread_t*)malloc(nHilos*sizeof(pthread_t));
-	
+	//printf("Crea los threads\n");
+
+	int *tam_lineas = (int *)malloc(MAX*sizeof(int));
+	printf("Crea arreglo de tam_lineas\n");
 	int nLineas;
-	int *tam_lineas;
-	nLineas = numero_lineas(ruta,tam_lineas);
+	nLineas = numero_lineas(ruta,tam_lineas);//Sale violación de core
+	printf("realiza la funcion numero_lineas\n");
 	
 	int ini,fin,div;
 	div = (int)nLineas/nHilos;
@@ -137,9 +141,7 @@ int main(int argc, char *argv[]){
 		estruc->linea_final = fin;
 		estruc->tPalabras = tPalabras;
 		estruc->tam_lineas = tam_lineas;
-		estruc->num_palabras = num_palabras;
 		estruc->ruta = ruta;
-		estruc->palabras = palabras;
 	}
 
 	return 0;
