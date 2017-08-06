@@ -8,13 +8,13 @@
 int numero_lineas(char *ruta, int *tam_lineas);
 void * funcion_hilo(void *estruc);
 
-typedef struct mi_estructuraTDA
-{
-	int inicio;
-	int fin;
-	char *ruta;	
-} estructura;
-
+typedef struct mi_estructuraTDA{
+	int linea_inicio;
+	int linea_final;
+	int nLineas;
+	int *tam_lineas;
+	char *ruta;
+}estructura;
 
 int numero_lineas(char *ruta, int *tam_lineas){
 	if(ruta!=NULL){
@@ -42,14 +42,28 @@ void * funcion_hilo(void *estruc){
 	
 	estructura *datos= (estructura *)estruc;
 	
+	int linea_inicio = datos->linea_inicio;
+	int linea_final = datos->linea_final;
+	int nLineas = datos->nLineas;
+	int tam_lineas = datos->tam_lineas;
 	char *ruta = datos->ruta;
-	FILE *fp = fopen(ruta,"rt");
 
-	fseek(fp, offset, SEEK_SET);
+	FILE *fp = fopen(ruta,"r");
+	fseek(fp,0, SEEK_SET);
 
-	int suma = 0;
+	int posInicial = 0;
+	int i;
+	for(i=0;i<linea_inicio;i++){
+		posInicial += tam_lineas[i];
+	}
+
+	int posFinal = posInicial;
+	for(i=linea_inicio;i<=linea_final;i++){
+		posFinal += tam_lineas[i];
+	}
+
 	char *linea;
-	while((linea = fgets(fp, buf, tamano))!=NULL){
+	while((ftell(fp)<=posFinal)||(fgets(linea,MAX,fp)!=NULL)){
 		
 	}
 	return (void *)suma;	
@@ -69,8 +83,13 @@ int main(int argc, char *argv[]){
 	for(i = 0 ; i < tPalabras ; i++){
 		palabras[i]=argv[i+3];
 	}
-	pthread_t * hilos;
+	pthread_t *hilos;
 	hilos = (pthread_t*)malloc(nHilos*sizeof(pthread_t));
 	
+	int nLineas;
+	int *tam_lineas;
+	nLineas = numero_lineas(ruta,tam_lineas);
+
+
 	return 0;
 }
