@@ -35,7 +35,7 @@ int numero_lineas(char *ruta, int *tam_lineas){
 					tam_lineas[lineas] = tam_linea;
 				}
 				lineas++;
-				tam_lineas = 0;
+				tam_linea = 0;
 			}
 		}
 		fclose(ar);
@@ -115,7 +115,9 @@ int main(int argc, char *argv[]){
 	for(i = 0 ; i < tPalabras ; i++){
 		palabras[i]=argv[i+3];
 	}
-	
+	/*for(i = 0 ; i < tPalabras ; i++){
+		printf("%s\n",palabras[i]);
+	}*/
 	pthread_t *hilos;
 	hilos = (pthread_t*)malloc(nHilos*sizeof(pthread_t));
 	//printf("Crea los threads\n");
@@ -125,11 +127,15 @@ int main(int argc, char *argv[]){
 	int nLineas;
 	nLineas = numero_lineas(ruta,tam_lineas);//Sale violación de core
 	printf("realiza la funcion numero_lineas\n");
-	
+	printf("numero de lineas del archivo:%i\n",nLineas);
+	for(i = 0 ; i < nLineas ; i++){
+		printf("linea=%i, valor:%i\n",i+1,tam_lineas[i]);
+	}
 	int ini,fin,div;
 	div = (int)nLineas/nHilos;
 	int j;
-	for(j=0;j<nHilos;i++){
+	printf("funciona antes for\n");
+	for(j=0;j<nHilos;j++){
 		ini=div*i;
 		if(i!=(nHilos-1))
 			fin=div*(i+1);
@@ -143,6 +149,6 @@ int main(int argc, char *argv[]){
 		estruc->tam_lineas = tam_lineas;
 		estruc->ruta = ruta;
 	}
-
+	printf("salio del for\n");
 	return 0;
 }
