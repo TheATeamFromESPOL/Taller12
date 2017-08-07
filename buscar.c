@@ -74,19 +74,21 @@ void * funcion_hilo(void *estruc){
 	char *linea = "";
 	char *palabra;
 	int j;
+	pthread_mutex_lock(&lock);
 	while((ftell(fp)<=posFinal)&&(fgets(linea,MAX,fp)!=NULL)){
-		palabra = strtok(linea,",.!?:; ");
+		palabra = strtok(linea,",.!?:;");
 		while(palabra!=NULL){
+			printf("Palabra: %s",palabra);
 			for(j=0;j<tPalabras;j++){
 				if(strcmp(palabras[j],palabra)==0){
-					pthread_mutex_lock(&lock);
 					num_palabras[j]+=1;
-					pthread_mutex_unlock(&lock);
-				}
-				palabra = strtok(NULL,",.!?:; ");
+ 				}
+ 				palabra = strtok(NULL,",.!?:;");
 			}
 		}
 	}
+
+	pthread_mutex_unlock(&lock);
 
 	return (void *)0;
 }
@@ -117,8 +119,11 @@ int main(int argc, char *argv[]){
 	}
 
 	char* ruta = argv[1];
-	int nHilos = atoi(argv[2]); 
+	int nHilos = atoi(argv[2]);
+	printf("Argumentos: %i\n",argc);
 	tPalabras=argc-3;
+	printf("Palabras: %i\n",tPalabras);
+
 	//Aquí habría que usa una estructura palabrasvecesTDA o sino solamente usar un arreglo global para las palabras y para el num de veces --Opté por los arreglos globales
 	/*char** palabras;
 	palabras = (char**)malloc(tPalabras*sizeof(char*));
@@ -126,6 +131,7 @@ int main(int argc, char *argv[]){
 
 	int i;
 	for(i = 0 ; i < tPalabras ; i++){
+		printf("Palabra a insertar: %s\n",argv[i+3]);
 		palabras[i]=argv[i+3];
 	}
 	/*for(i = 0 ; i < tPalabras ; i++){
@@ -141,11 +147,12 @@ int main(int argc, char *argv[]){
 	nLineas = numero_lineas(ruta,tam_lineas);//Sale violación de core
 	//printf("realiza la funcion numero_lineas\n");
 	//printf("numero de lineas del archivo:%i\n",nLineas);
-	/*for(i = 0 ; i < nLineas ; i++){
+	for(i = 0 ; i < nLineas ; i++){
 		printf("linea=%i, valor:%i\n",i+1,tam_lineas[i]);
-	}*/
+	}
 	int ini,fin,div;
 	div = (int)nLineas/nHilos;
+	printf("%i",div);
 	int j;
 	//printf("funciona antes for\n");
 	for(j=0;j<nHilos;j++){
@@ -177,9 +184,10 @@ int main(int argc, char *argv[]){
 	for(j=0;j<nHilos;j++){
 		pthread_join(hilos[j],NULL);
 	}
-	pthread_join(presentador,NULL);
+	pthread_join(hiloPresentacion,NULL);
 
 	printf("\nFINAL\nCantidad de veces que aparece cada palabra:\n");
+	pthread_join(hiloPresentacion,NULL);
 	for(i=0; i<tPalabras;i++){
 		printf("%s: %i veces\n",palabras[i],num_palabras[i]);
 	}
