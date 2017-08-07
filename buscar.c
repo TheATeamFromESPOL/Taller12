@@ -7,8 +7,8 @@
 #define MAX 1000000
 
 pthread_mutex_t lock;
-int num_palabras[MAX];
-char *palabras[MAX];
+int *num_palabras;
+char **palabras;
 int tPalabras;
 
 int palabraEnArreglo(char **arreglo,char *palabra);
@@ -48,7 +48,7 @@ int numero_lineas(char *ruta, int *tam_lineas){
 void * funcion_hilo(void *estruc){
 
 	estructura *datos= (estructura *)estruc;
-	
+	//printf("funcionfase1--");
 	int linea_inicio = datos->linea_inicio;
 	int linea_final = datos->linea_final;
 	int *tam_lineas = datos->tam_lineas;
@@ -56,19 +56,19 @@ void * funcion_hilo(void *estruc){
 
 	//Open de archivo
 	FILE *fp = fopen(ruta,"r");
-
+	//printf("funcionfase2--");
 	int posInicial = 0;
 	int i;
 	for(i=0;i<linea_inicio;i++){
 		posInicial += tam_lineas[i];
 	}
-
+	//printf("funcionfase3--");
 	int j;
 	int posFinal = posInicial;
 	for(j=linea_inicio;j<=linea_final;j++){
 		posFinal += tam_lineas[j];
 	}
-
+	//printf("funcionfase4--");
 	//Colocación de puntero en la posición correspondiente
 	fseek(fp,posInicial, SEEK_SET);
 	
@@ -88,7 +88,7 @@ void * funcion_hilo(void *estruc){
 		}
 	}
 	*/
-
+	//printf("funcionfase5--");
 	pthread_mutex_lock(&lock);
 	char *linea = (char *)malloc(sizeof(char)*MAX);
 	char *palabra = "";
@@ -109,6 +109,7 @@ void * funcion_hilo(void *estruc){
 		}
 	}
 	pthread_mutex_unlock(&lock);
+	//printf("funcionfase6--");
 	return (void *)0;
 }
 
@@ -141,12 +142,14 @@ int main(int argc, char *argv[]){
 	char* ruta = argv[1];
 	int nHilos = atoi(argv[2]);
 	tPalabras=argc-3;
+	palabras = (char **)malloc(tPalabras*sizeof(char*));
+	num_palabras = (int *)malloc(tPalabras*sizeof(int));
 
 	int i;
 	for(i = 0 ; i < tPalabras ; i++){
 		palabras[i]=argv[i+3];
 	}
-	
+
 	pthread_t *hilos;
 	hilos = (pthread_t*)malloc(nHilos*sizeof(pthread_t));
 
@@ -158,28 +161,37 @@ int main(int argc, char *argv[]){
 	div = (int)nLineas/nHilos;
 	int j;
 	//printf("funciona antes for\n");
+	estructura *estruc;
 	for(j=0;j<nHilos;j++){
+		//printf("entra al for");
 		ini=div*j;
 		if(j!=(nHilos-1))
 			fin=div*(j+1);
 		else
 			fin=nLineas;
-		//printf("Linea Inicio: %i   Linea Fin: %i",ini,fin);
+		//printf("Linea Inicio: %i   Linea Fin: %i\n",ini,fin);
 		//Creacion estructura
 		//printf("creacion estructura\n");
-		estructura *estruc = (estructura *)malloc(sizeof(estructura *));
+		estruc = (estructura *)malloc(sizeof(estructura *));
+		//printf("instanciado-");		
 		estruc->linea_inicio = ini;
+		//printf("lininicio-");
 		estruc->linea_final = fin;
+		//printf("linfinal-");
 		estruc->tam_lineas = tam_lineas;
+		//printf("tam_lineas-");
 		estruc->ruta = ruta;
+		//printf("ruta-");
 		//printf("Se crea la estructura\n");
 		int hilo = pthread_create(&hilos[j], NULL, funcion_hilo,(void *)estruc);
+		//printf("Creacionhilo\n");
 		if(hilo<0){
 			printf("Error creando hilo de conteo.");
 			return 0;
 		}
 	}
 	//printf("salio del for\n");
+	//printf("hue\n");
 	
 	pthread_t presentador;
 	int hiloPresentacion = pthread_create(&presentador, NULL, impresionNumPalabras, NULL);
@@ -193,7 +205,7 @@ int main(int argc, char *argv[]){
 	for(hue=0;hue<nHilos;hue++){
 		pthread_join(hilos[hue],NULL);
 	}*/
-	//pthread_join(presentador,NULL);
+	pthread_join(presentador,NULL);
 
 	/*printf("\nFINAL\nCantidad de veces que aparece cada palabra:\n");
 	pthread_join(hiloPresentacion,NULL);
