@@ -75,7 +75,7 @@ void * funcion_hilo(void *estruc){
 	char *palabra;
 	int j;
 	while((ftell(fp)<=posFinal)&&(fgets(linea,MAX,fp)!=NULL)){
-		palabra = strtok(linea,",.!?:;");
+		palabra = strtok(linea,",.!?:; ");
 		while(palabra!=NULL){
 			for(j=0;j<tPalabras;j++){
 				if(strcmp(palabras[j],palabra)==0){
@@ -83,7 +83,7 @@ void * funcion_hilo(void *estruc){
 					num_palabras[j]+=1;
 					pthread_mutex_unlock(&lock);
 				}
-				palabra = strtok(NULL,",.!?:;");
+				palabra = strtok(NULL,",.!?:; ");
 			}
 		}
 	}
